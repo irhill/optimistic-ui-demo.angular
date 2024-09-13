@@ -1,0 +1,3 @@
+<oui-core-layout heading="Optimistic UI - Optimistic with embellished data">
+  <oui-users-table [users]="appFacade.users$ | async" [loading]="appFacade.loading$ | async" (addUser)="addUser($event)" (editUser)="editUser($event)" (deleteUser)="deleteUser($event)" />
+</oui-core-layout>

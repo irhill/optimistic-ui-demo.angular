@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Edit user</h2>
+<mat-dialog-content>
+  <form class="user-form">
+    <mat-form-field>
+      <mat-label>Forename</mat-label>
+      <input matInput type="text" name="forename" [(ngModel)]="forename" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Surname</mat-label>
+      <input matInput type="text" name="surname" [(ngModel)]="surname" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Date of birth</mat-label>
+      <input matInput type="date" name="dob" [(ngModel)]="dob" required>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button (click)="onSubmit()">Submit</button>
+</mat-dialog-actions>
+

@@ -1,0 +1,27 @@
+@import 'ngx-toastr/toastr';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* notification snackbar styles */
+.mat-mdc-snack-bar-container {
+  &.notify-info {
+    --mdc-snackbar-container-color: #d1ecf1;
+    --mdc-snackbar-supporting-text-color: #0c5460;
+  }
+
+  &.notify-success {
+    --mdc-snackbar-container-color: #d4edda;
+    --mdc-snackbar-supporting-text-color: #155724;
+  }
+
+  &.notify-warn {
+    --mdc-snackbar-container-color: #fff3cd;
+    --mdc-snackbar-supporting-text-color: #856404;
+  }
+
+  &.notify-error {
+    --mdc-snackbar-container-color: #f8d7da;
+    --mdc-snackbar-supporting-text-color: #721c24;
+  }
+}
