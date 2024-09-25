@@ -1,10 +1,26 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core'
 import { AsyncPipe } from '@angular/common'
 
-import {MatButton, MatIconButton} from "@angular/material/button"
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card'
+import { MatButton, MatIconButton } from '@angular/material/button'
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card'
 import { MatDialog } from '@angular/material/dialog'
-import {MatIcon} from "@angular/material/icon"
+import { MatIcon } from '@angular/material/icon'
+import { MatProgressBar } from '@angular/material/progress-bar'
 import { MatProgressSpinner } from '@angular/material/progress-spinner'
 import {
   MatCell,
@@ -12,8 +28,11 @@ import {
   MatColumnDef,
   MatHeaderCell,
   MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
 } from '@angular/material/table'
 
 import { User } from '../../models/user'
@@ -44,25 +63,35 @@ import { NotificationsFacade, ShowErrorNotification } from '@libs/notifications'
     MatCardTitle,
     MatProgressSpinner,
     MatCardActions,
+    MatProgressBar,
   ],
-  providers: [ NotificationsFacade ],
+  providers: [NotificationsFacade],
   templateUrl: './users-table.component.html',
   styleUrl: './users-table.component.scss',
 })
-export class UsersTableComponent {
+export class UsersTableComponent implements OnInit {
   private readonly _dialog = inject(MatDialog)
   private readonly _notificationsFacade = inject(NotificationsFacade)
 
   @Input({ required: true }) users: User[] | null = []
   @Input() loading: boolean | null = false
-  @Input() showEmbellishedData = false
-  @Input() additionalDisplayColumns: string[] = []
+  @Input() showFullName = false
 
   @Output() addUser = new EventEmitter<User>()
   @Output() editUser = new EventEmitter<User>()
   @Output() deleteUser = new EventEmitter<string>()
 
-  displayedColumns: string[] = [ 'forename', 'surname', 'dob', 'actions', ...this.additionalDisplayColumns ]
+  displayedColumns: WritableSignal<string[]> = signal([])
+
+  ngOnInit(): void {
+    this.displayedColumns.set([
+      'forename',
+      'surname',
+      'dob',
+      ...(this.showFullName ? ['fullName'] : []),
+      'actions',
+    ])
+  }
 
   handleAddUser(): void {
     this._dialog
@@ -79,14 +108,18 @@ export class UsersTableComponent {
       .afterClosed()
       .subscribe((user: User) => {
         if (user.id) this.editUser.emit(user)
-        else this._notificationsFacade
-          .dispatch(ShowErrorNotification({ message: 'Edit failed: no user id' }))
-    })
+        else
+          this._notificationsFacade.dispatch(
+            ShowErrorNotification({ message: 'Edit failed: no user id' })
+          )
+      })
   }
 
   handleDeleteUser(id: string): void {
     if (id) this.deleteUser.emit(id)
-    else this._notificationsFacade
-      .dispatch(ShowErrorNotification({ message: 'Delete failed: no user id' }))
+    else
+      this._notificationsFacade.dispatch(
+        ShowErrorNotification({ message: 'Delete failed: no user id' })
+      )
   }
 }

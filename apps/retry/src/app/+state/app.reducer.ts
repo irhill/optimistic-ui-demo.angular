@@ -26,15 +26,18 @@ export const appReducer = createReducer(
   on(actions.LoadUsersSuccess, (state, { users }) => ({ ...state, loading: false, loaded: true, users })),
   on(actions.LoadUsersError, (state, { error }) => ({ ...state, loading: false, loaded: true, error })),
 
-  on(actions.AddUser, (state, { user }) => ({
+  on(actions.AddUser, (state, { user, isRetry }) => ({
     ...state,
-    users: [ ...state.users || [], user ]
+    users: [
+      ...state.users || [],
+      ...isRetry ? [] : [ user ]
+    ]
   })),
   on(actions.AddUserSuccess, (state, { user }) => ({
     ...state,
     users: state.users.map(u => !u.id ? user : u)
   })),
-  on(actions.AddUserError, (state, { error }) => ({
+  on(actions.AddUserFail, (state, { error }) => ({
     ...state,
     users: state.users.filter(u => u.id),
     error

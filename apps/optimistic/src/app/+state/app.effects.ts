@@ -53,7 +53,7 @@ export class AppEffects {
   ))
 
   private readonly refreshUser$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.AddUserSuccess, actions.EditUserSuccess, actions.DeleteUserSuccess),
+    ofType(actions.EditUserSuccess, actions.DeleteUserSuccess),
     map(_ => actions.LoadUsers())
   ))
 

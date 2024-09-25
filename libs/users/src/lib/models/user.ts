@@ -3,5 +3,5 @@ export interface User {
   forename: string
   surname: string
   dob: string
-  category?: string
+  fullName?: string
 }
