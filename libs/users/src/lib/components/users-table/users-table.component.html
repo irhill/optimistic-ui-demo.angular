@@ -1,7 +1,5 @@
 <mat-card appearance="outlined">
-  <mat-card-header>
-    <mat-card-title>Users</mat-card-title>
-  </mat-card-header>
+
   <mat-card-content>
     @if (loading) {
       <mat-spinner />
@@ -51,12 +49,14 @@
       </table>
     }
   </mat-card-content>
+
   <mat-card-actions align="end">
     <button mat-flat-button (click)="handleAddUser()">
       <mat-icon>add</mat-icon>
       <span>Add</span>
     </button>
   </mat-card-actions>
+
 </mat-card>
 
 
