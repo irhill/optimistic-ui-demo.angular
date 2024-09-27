@@ -93,6 +93,11 @@ export class UsersTableComponent implements OnInit {
     ])
   }
 
+  disableActions(user: User): boolean {
+    if (!this.showFullName) return false
+    return user.id === undefined
+  }
+
   handleAddUser(): void {
     this._dialog
       .open(EditUserDialogComponent)

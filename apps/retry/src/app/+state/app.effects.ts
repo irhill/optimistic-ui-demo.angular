@@ -8,7 +8,7 @@ import {
   ShowErrorNotification,
   ShowInfoNotification,
   ShowSuccessNotification,
-  ShowWarningNotification
+  ShowWarningNotification,
 } from '@libs/notifications'
 
 import * as actions from './app.actions'
@@ -19,78 +19,130 @@ export class AppEffects {
   private readonly _usersService = inject(UsersService)
   private readonly _notificationsService = inject(NotificationsService)
 
-  private readonly loadUser$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.LoadUsers),
-    mergeMap(() =>
-      this._usersService.getUsers().pipe(
-        map((users: User[]) => actions.LoadUsersSuccess({ users })),
-        catchError((error: Error) => of(actions.LoadUsersError({ error })))
-      )
-    )
-  ))
-
-  private readonly addUSer$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.AddUser),
-    mergeMap(({ user }) =>
-      this._usersService.addUser(user).pipe(
-        map(_ => actions.AddUserSuccess({ user })),
-        catchError((error: Error) => of(actions.AddUserError({ error, user }))
+  private readonly loadUser$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.LoadUsers),
+      mergeMap(() =>
+        this._usersService.getUsers().pipe(
+          map((users: User[]) => actions.LoadUsersSuccess({ users })),
+          catchError((error: Error) => of(actions.LoadUsersError({ error })))
         )
       )
     )
-  ))
+  )
 
-  private readonly addUserFail$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.AddUserError),
-    mergeMap(({ user, error }) =>
-      this._notificationsService.notifyRequestFailed().pipe(
-        mergeMap(result => result ? of(actions.AddUser({ user, isRetry: true })) : of(actions.AddUserFail({ error })))
+  private readonly addUSer$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.AddUser),
+      mergeMap(({ user }) =>
+        this._usersService.addUser(user).pipe(
+          map((_) => actions.AddUserSuccess({ user })),
+          catchError((error: Error) =>
+            of(actions.AddUserError({ error, user }))
+          )
+        )
       )
     )
-  ))
+  )
 
-  private readonly updateUser$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.EditUser),
-    mergeMap(({ id, user }) =>
-      this._usersService.updateUser(id, user).pipe(
-        map(_ => actions.EditUserSuccess()),
-        catchError((error: Error) => of(actions.EditUserError({ error })))
+  private readonly addUserFail$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.AddUserError),
+      mergeMap(({ user, error }) =>
+        this._notificationsService
+          .notifyRequestFailed()
+          .pipe(
+            mergeMap((result) =>
+              result
+                ? of(actions.AddUser({ user, isRetry: true }))
+                : of(actions.AddUserFail({ error }))
+            )
+          )
       )
     )
-  ))
+  )
 
-  private readonly deleteUser$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.DeleteUser),
-    mergeMap(({ id }) =>
-      this._usersService.deleteUser(id).pipe(
-        map(_ => actions.DeleteUserSuccess()),
-        catchError((error: Error) => of(actions.DeleteUserError({ error })))
+  private readonly updateUser$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.EditUser),
+      mergeMap(({ id, user }) =>
+        this._usersService.updateUser(id, user).pipe(
+          map((_) => actions.EditUserSuccess()),
+          catchError((error: Error) => of(actions.EditUserError({ error })))
+        )
       )
     )
-  ))
+  )
 
-  private readonly refreshUser$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.EditUserSuccess, actions.DeleteUserSuccess),
-    map(_ => actions.LoadUsers())
-  ))
+  private readonly deleteUser$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.DeleteUser),
+      mergeMap(({ id }) =>
+        this._usersService.deleteUser(id).pipe(
+          map((_) => actions.DeleteUserSuccess()),
+          catchError((error: Error) => of(actions.DeleteUserError({ error })))
+        )
+      )
+    )
+  )
 
-  private readonly notifyInfo = createEffect(() => this._actions$.pipe(
-    ofType(actions.LoadUsers, actions.AddUser, actions.EditUser, actions.DeleteUser),
-    map(action => ShowInfoNotification({ message: `Info: ${ action.type }` }))
-  ))
+  private readonly refreshUser$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(
+        actions.AddUserSuccess,
+        actions.EditUserSuccess,
+        actions.DeleteUserSuccess
+      ),
+      map((_) => actions.LoadUsers())
+    )
+  )
 
-  private readonly notifySuccess$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.LoadUsersSuccess, actions.AddUserSuccess, actions.EditUserSuccess, actions.DeleteUserSuccess),
-    map(action => ShowSuccessNotification({ message: `Success: ${ action.type }` }))
-  ))
+  private readonly notifyInfo = createEffect(() =>
+    this._actions$.pipe(
+      ofType(
+        actions.LoadUsers,
+        actions.AddUser,
+        actions.EditUser,
+        actions.DeleteUser
+      ),
+      map((action) => ShowInfoNotification({ message: `Info: ${action.type}` }))
+    )
+  )
 
-  private readonly notifyWarn$ = createEffect(() => this._actions$.pipe(
-    ofType(actions.AddUserFail),
-    map(action => ShowWarningNotification({ message: `Warning: ${ action.type }` }))
-  ))
+  private readonly notifySuccess$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(
+        actions.LoadUsersSuccess,
+        actions.AddUserSuccess,
+        actions.EditUserSuccess,
+        actions.DeleteUserSuccess
+      ),
+      map((action) =>
+        ShowSuccessNotification({ message: `Success: ${action.type}` })
+      )
+    )
+  )
 
-  private readonly notifyError = createEffect(() => this._actions$.pipe(
-    ofType(actions.LoadUsersError, actions.AddUserError, actions.EditUserError, actions.DeleteUserError),
-    map(action => ShowErrorNotification({ message: `Error: ${ action.type }` }))
-  ))
+  private readonly notifyWarn$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(actions.AddUserFail),
+      map((action) =>
+        ShowWarningNotification({ message: `Warning: ${action.type}` })
+      )
+    )
+  )
+
+  private readonly notifyError = createEffect(() =>
+    this._actions$.pipe(
+      ofType(
+        actions.LoadUsersError,
+        actions.AddUserError,
+        actions.EditUserError,
+        actions.DeleteUserError
+      ),
+      map((action) =>
+        ShowErrorNotification({ message: `Error: ${action.type}` })
+      )
+    )
+  )
 }
